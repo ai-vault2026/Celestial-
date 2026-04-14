@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>celestial 💙</title>
-
+  <title>Test 3D</title>
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@2.0.0/lib/three-vrm.min.js"></script>
-
   <style>
-    body { margin:0; background:#0f172a; color:white; }
-    canvas { width:100%; height:40vh; }
+    body { margin:0; background:black; }
   </style>
 </head>
 <body>
@@ -17,58 +12,34 @@
 <canvas id="c"></canvas>
 
 <script>
-let scene = new THREE.Scene();
+const scene = new THREE.Scene();
 
-let camera = new THREE.PerspectiveCamera(
-  30,
-  window.innerWidth / (window.innerHeight * 0.4),
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
 
-let renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("c"),
-  alpha: true
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("c")
 });
 
-renderer.setSize(window.innerWidth, window.innerHeight * 0.4);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-// LIGHT
-let light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(1, 1, 1);
-scene.add(light);
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
-// CAMERA POSITION
-camera.position.set(0, 1, 2);
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
 
-// LOADER
-const loader = new THREE.GLTFLoader();
+camera.position.z = 2;
 
-let currentVrm;
-
-loader.load(
-  "https://cdn.jsdelivr.net/gh/vrm-c/vrm-specification@master/samples/Models/Hana/Hana.vrm",
-  (gltf) => {
-    THREE.VRM.from(gltf).then((vrm) => {
-      currentVrm = vrm;
-      scene.add(vrm.scene);
-    });
-  },
-  (progress) => {
-    console.log("Loading:", progress.loaded);
-  },
-  (error) => {
-    console.error("Error loading model:", error);
-  }
-);
-
-// ANIMATE
 function animate() {
   requestAnimationFrame(animate);
 
-  if (currentVrm) {
-    currentVrm.scene.rotation.y += 0.01;
-  }
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
 
   renderer.render(scene, camera);
 }
