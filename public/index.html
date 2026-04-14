@@ -18,33 +18,62 @@
 
 <script>
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 1000);
-let renderer = new THREE.WebGLRenderer({canvas: document.getElementById("c")});
-renderer.setSize(window.innerWidth, window.innerHeight*0.4);
 
-let light = new THREE.DirectionalLight(0xffffff,1);
-light.position.set(1,1,1);
+let camera = new THREE.PerspectiveCamera(
+  30,
+  window.innerWidth / (window.innerHeight * 0.4),
+  0.1,
+  1000
+);
+
+let renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("c"),
+  alpha: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight * 0.4);
+
+// LIGHT
+let light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(1, 1, 1);
 scene.add(light);
 
-camera.position.z = 1.5;
+// CAMERA POSITION
+camera.position.set(0, 1, 2);
 
-let loader = new THREE.GLTFLoader();
+// LOADER
+const loader = new THREE.GLTFLoader();
+
+let currentVrm;
 
 loader.load(
- "https://cdn.jsdelivr.net/gh/vrm-c/vrm-specification@master/samples/Models/Hana/Hana.vrm",
- (gltf)=>{
-   THREE.VRM.from(gltf).then((vrm)=>{
-     scene.add(vrm.scene);
-
-     function animate(){
-       requestAnimationFrame(animate);
-       vrm.scene.rotation.y += 0.01;
-       renderer.render(scene,camera);
-     }
-     animate();
-   });
- }
+  "https://cdn.jsdelivr.net/gh/vrm-c/vrm-specification@master/samples/Models/Hana/Hana.vrm",
+  (gltf) => {
+    THREE.VRM.from(gltf).then((vrm) => {
+      currentVrm = vrm;
+      scene.add(vrm.scene);
+    });
+  },
+  (progress) => {
+    console.log("Loading:", progress.loaded);
+  },
+  (error) => {
+    console.error("Error loading model:", error);
+  }
 );
+
+// ANIMATE
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (currentVrm) {
+    currentVrm.scene.rotation.y += 0.01;
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
 </script>
 
 </body>
