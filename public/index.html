@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>celestial 💙</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@2.0.0/lib/three-vrm.min.js"></script>
+
+  <style>
+    body { margin:0; background:#0f172a; color:white; }
+    canvas { width:100%; height:40vh; }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<script>
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 0.1, 1000);
+let renderer = new THREE.WebGLRenderer({canvas: document.getElementById("c")});
+renderer.setSize(window.innerWidth, window.innerHeight*0.4);
+
+let light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(1,1,1);
+scene.add(light);
+
+camera.position.z = 1.5;
+
+let loader = new THREE.GLTFLoader();
+
+loader.load(
+ "https://cdn.jsdelivr.net/gh/vrm-c/vrm-specification@master/samples/Models/Hana/Hana.vrm",
+ (gltf)=>{
+   THREE.VRM.from(gltf).then((vrm)=>{
+     scene.add(vrm.scene);
+
+     function animate(){
+       requestAnimationFrame(animate);
+       vrm.scene.rotation.y += 0.01;
+       renderer.render(scene,camera);
+     }
+     animate();
+   });
+ }
+);
+</script>
+
+</body>
+</html>
